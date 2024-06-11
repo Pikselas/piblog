@@ -1,0 +1,9 @@
+{
+    "compilerOptions": 
+    {
+        "target": "ESNext",
+        "watch": true,
+        "noEmitOnError": true,
+        "outDir": "statics/scripts",
+    }
+}

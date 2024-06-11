@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>piblog</title>
+    
+    <link rel="stylesheet" href="./styles/FlowerThemes.css">
+
+    <script src="./scripts/Env.js"></script>
+    <script src="./scripts/Hexagon.js"></script>
+    <script src="./scripts/HexRow.js"></script>
+    <script src="./scripts/HexPanel.js"></script>
+    <script src="./scripts/HexFlower.js"></script>
+    <script src="./scripts/FlowerThemes.js"></script>
+
+    <style>
+        body
+        {
+            background-color: #5483b3;
+        }
+
+        .blog_itm
+        {
+            display: block;
+            width: 650px;
+            height: 200px;
+            background-color: #052659;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0px 0px 10px #000000;
+
+            position: absolute;
+            top: calc(50% - 100px);
+            left: calc(50% - 325px);
+        }
+        #blgitm
+        {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .blog_pan
+        {
+            display: block;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+
+            width: 150px;
+            height: 150px;
+            background-color: #052659;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0px 0px 10px #000000;
+        }
+
+        .blog_pan img
+        {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="blog_itm">
+        <div id="blgitm"></div>
+
+        <div class="blog_pan">
+            <img src="./as.jpg" />
+        </div>
+
+    </div>
+
+    <script>
+        let fl = new HexClover(450 , 450);
+        
+        AsElement(fl).style.position = "absolute";
+        AsElement(fl).style.left = "315px";
+        AsElement(fl).style.top = "-100px";
+        SetFlowerTheme(fl, "sci_fi");
+
+        let fl2 = new HexClover(250 , 250);
+        AsElement(fl2).style.position = "absolute";
+        AsElement(fl2).style.left = "-87px";
+        AsElement(fl2).style.top = "-83px";
+        AsElement(fl2).style.transform = "rotate(-37deg)";
+        SetFlowerTheme(fl2, "sci_fi");
+
+        document.getElementById("blgitm").appendChild(fl.Element.HtmlElement);
+        document.getElementById("blgitm").appendChild(fl2.Element.HtmlElement);
+    </script>
+</body>
+</html>

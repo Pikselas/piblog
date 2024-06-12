@@ -1,0 +1,116 @@
+@font-face 
+{
+    font-family: 'Methanerse';
+    src: url('../fonts/Methanerse.ttf');
+}
+
+@font-face 
+{
+    font-family: 'Azonix';
+    src: url('../fonts/Azonix.otf');
+}
+
+.blog_itm
+{
+    display: block;
+    width: 650px;
+    height: 200px;
+    /* background-color: #052659; */
+    /* background-color: #5483b3; */
+    background-color: #82b6f9;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0px 0px 10px #000000;
+    position: relative;
+}
+
+.blog_itm .content_area
+{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+.blog_itm .content_area .content
+{
+    display: block;
+    width: 530px;
+    height: 175px;
+    background-color: #000000ad;
+    position: absolute;
+    top: 15px;
+    left: 10px;
+    border-radius: 20px;
+    /* clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%); */
+}
+
+.blog_itm .blog_pan_img
+{
+    display: block;
+    width: 170px;
+    height: 170px;
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    /* animation: rotate 10s linear infinite reverse; */
+}
+
+.blog_itm .content_area .content h1
+{
+    display: block;
+    color: #ffffff;
+    font-size: 30px;
+    margin-left: 20px;
+    max-width: 450px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-family: "Methanerse";
+    margin-top: 0px;
+}
+
+.blog_itm .content_area .content .description
+{
+    display: block;
+    color: #ffffff;
+    font-size: 14px;
+    margin-left: 30px;
+    width: 380px;
+    height: 65px;
+    padding: 10px;
+    margin-top: -20px;
+    border-radius: 15px;
+    background-color: #4d75b391;
+    font-family: "Azonix";
+    overflow: hidden;
+
+    line-height: 1em;
+    max-height: 5em;
+}
+
+.blog_itm .content_area .content .tags
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 250px;
+    height: 25px;
+    position: absolute;
+    bottom: 5px;
+    margin-left: 95px;
+    padding: 2px;
+    /* background-color: #a0ffffad; */
+    border-radius: 20px;
+    /* border: 2px solid #ffffff; */
+}
+
+.blog_itm .content_area .content .tags img
+{
+    display: block;
+    width: 25px;
+    height: 25px;
+    margin: 2px;
+    border-radius: 10px;
+}

@@ -80,14 +80,88 @@
             overflow: hidden;
             /* box-shadow: 0px 0px 10px 2px #000000; */
         }
+
+        .base_panel .contents_panel
+        {
+            width: 90%;
+            height: 90%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #000a1896;
+            border-radius: 25px;
+            overflow: hidden;
+            position: absolute;
+            box-shadow: 0px 0px 20px 5px #000000;
+        }
+
+        .base_panel .contents_panel input[type="search"]
+        {
+            width: 90%;
+            height: 50px;
+            border-radius: 25px;
+            text-align:center;
+            border: none;
+            background-color: #bbe1f8b6;
+            color: #ffffff;
+            font-size: 18px;
+            outline: none;
+            font-family: "Azonix";
+        }
+
+        .base_panel .contents_panel .tags
+        {
+            width: 85%;
+            height: 70%;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-y: scroll;
+            scrollbar-width: none;
+            border-radius: 25px;
+            background-color: rgba(0, 4, 7, 0.633);
+            box-shadow: 0px 0px 5px #bedcfc73;
+            flex-wrap: wrap;
+            /* border: 1px solid #bedcfc73; */
+            /* scrollbar-color: #000000 #243f87b6; */
+        }
+
+        .base_panel .contents_panel .tags .tag
+        {
+            max-width: fit-content;
+            padding-left: 10px;
+            padding-right: 10px;
+            height: 50px;
+            margin: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000000;
+            color: #ffffff;
+            font-size: 18px;
+            border-radius: 25px;
+            box-shadow: 0px 0px 5px #f7f4f4;
+            cursor: pointer;
+            font-family: "Azonix";
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+        }
     </style>
 </head>
 <body>
 
-    <div id="fd" class="base_panel">
+    <div class="base_panel">
+        <div id="fd"></div>
+        <div class="contents_panel">
+            <input type="search" placeholder="Search.."/>
+            <div class="tags">
 
+                <div class="tag">C++</div>
+                <div class="tag">Golang</div>
 
-
+            </div>
+        </div>
     </div>
 
     <!-- <div id="blog_itm_container">
@@ -95,7 +169,7 @@
     </div> -->
     <script>
         let flow = new HexClover(800,800);
-        AsElement(flow).style.marginTop = "70px";
+        AsElement(flow).style.marginTop = "65px";
         AsElement(flow).style.transform = "rotate(-180deg)";
         SetFlowerTheme(flow, "base_panel_1");
         document.getElementById("fd").appendChild(flow.Element.HtmlElement);

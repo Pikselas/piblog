@@ -14,6 +14,7 @@
     <script src="./scripts/HexPanel.js"></script>
     <script src="./scripts/HexFlower.js"></script>
     <script src="./scripts/FlowerThemes.js"></script>
+    <script src="./scripts/PageFuntions.js"></script>
     <script src="./scripts/PageComponents.js"></script>
 
     <style>  
@@ -29,6 +30,7 @@
             height: 100vh;
             margin: 0;
             padding: 0;
+            overflow: hidden;
         }
         @keyframes rotate
         {
@@ -46,23 +48,54 @@
         {
             position: absolute;
             display: flex;
-            flex-wrap: wrap;
             justify-content: center;
             align-items: center;
             border-radius: 25px;
             background-color: #040910b6;
             padding: 10px;
-            width: 680px;
+            width: 685px;
             height: 85%;
-            left: 10px;
-            top: calc(50% - 42.5%);
+            /* left: 10px; */
+            /* top: calc(50% - 42.5%); */
             box-shadow: 0px 0px 10px 2px #000000;
+            transition: all 0.3s;
+            overflow: hidden;
+        }
+
+        #blog_posts
+        {
+            position: absolute;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
             overflow-y: scroll;
             scrollbar-width: thin;
+            width: 680px;
+            height: calc(100% - 100px);
+            top: 75px;
             scrollbar-color: #000000 #243f87b6;
         }
 
-        #blog_itm_container > *
+        #blog_itm_container button
+        {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+            background-color: #000000;
+            color: #ffffff;
+            font-size: 20px;
+            font-family: "Azonix";
+            cursor: pointer;
+            border: none;
+            outline: none;
+            box-shadow: 0px 0px 5px #ffffff;
+        }
+
+        #blog_posts > *
         {
             margin: 10px;
         }
@@ -157,27 +190,29 @@
             <input type="search" placeholder="Search.."/>
             <div class="tags">
 
-                <div class="tag">C++</div>
+                <div onclick="ShowBlogPosts('GF')" class="tag">C++</div>
                 <div class="tag">Golang</div>
 
             </div>
         </div>
     </div>
 
-    <!-- <div id="blog_itm_container">
-
-    </div> -->
+    <div id="blog_itm_container">
+        <div id="blog_posts"></div>
+        <button onclick="HideBlogPosts()"> X </button>
+    </div>
     <script>
+    
         let flow = new HexClover(800,800);
         AsElement(flow).style.marginTop = "65px";
         AsElement(flow).style.transform = "rotate(-180deg)";
         SetFlowerTheme(flow, "base_panel_1");
+        
         document.getElementById("fd").appendChild(flow.Element.HtmlElement);
-    //     document.getElementById("blog_itm_container").appendChild(GetBlogTile("Creating the direct3d art using LGTV+" , "erghfbhf" , ["cpp","golang"]));
-    //     document.getElementById("blog_itm_container").appendChild(GetBlogTile("Creating the direct3d art using LGTV+" , "erghfbhf" , ["cpp","golang"]));
-    //     document.getElementById("blog_itm_container").appendChild(GetBlogTile("Creating the direct3d art using LGTV+" , "erghfbhf" , ["cpp","golang"]));
-    //     document.getElementById("blog_itm_container").appendChild(GetBlogTile("Creating the direct3d art using LGTV+" , "erghfbhf" , ["cpp","golang"]));
-    //     document.getElementById("blog_itm_container").appendChild(GetBlogTile("Creating the direct3d art using LGTV+" , "erghfbhf" , ["cpp","golang"]));
-     </script>
+        document.getElementById("blog_posts").appendChild(GetBlogTile("Creating the direct3d art using LGTV+" , "erghfbhf" , ["cpp","golang"]));
+    
+        HideBlogPosts();
+
+    </script>
 </body>
 </html>

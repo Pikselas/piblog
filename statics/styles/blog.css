@@ -1,0 +1,30 @@
+h1
+{
+    color: #00f3ff;
+    font-family: "Methanerse";
+    text-align: center;
+}
+p
+{
+    color: #a6c7cf;
+    padding: 25px;
+    font-family: "Neusharp";
+}
+.code_snippet
+{
+    color: #f0f0f0;
+    font-family: monospace;
+    padding: 5px;
+    background-color: #01060e;
+    border-radius: 15px;
+    font-size: 15px;
+    box-shadow: 0px 0px 10px #000000;
+}
+.img_container
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 25px;
+}

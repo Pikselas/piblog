@@ -1,0 +1,22 @@
+body
+{
+    background-color: #010814;
+}
+
+@font-face 
+{
+    font-family: 'Methanerse';
+    src: url('../fonts/Methanerse.ttf');
+}
+
+@font-face 
+{
+    font-family: 'Azonix';
+    src: url('../fonts/Azonix.otf');
+}
+
+@font-face 
+{
+    font-family: 'Neusharp';
+    src: url('../fonts/NeusharpBold.otf');
+}

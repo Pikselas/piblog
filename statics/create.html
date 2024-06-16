@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create blog</title>
+    <link rel="stylesheet" href="/styles/global.css">
+    <link rel="stylesheet" href="/styles/blog.css">
+    <style>
+        button
+        {
+            width: 50px;
+            height: 40px;
+            background-color: #f1f1f1;
+            border: none;
+            border-radius: 5px;
+            font-size: 20px;
+            cursor: pointer;
+            position: relative;
+            right: 25px;
+        }
+        .new_content_panel
+        {
+            width: 600px;
+            height: 400px;
+            background-color: #02030d;
+            border-radius: 25px;
+            margin-top: 20px;
+            position: absolute;
+            left: calc(50% - 300px);
+        }
+        .tools
+        {
+            width: 450px;
+            height: 60px;
+            /* background-color: #f1f1f1; */
+            border-radius: 50px;
+            margin-top: 20px;
+            position: absolute;
+            left: calc(50% - 225px);
+            /* border:  2px solid #00f3ff; */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .new_content_panel .tools img
+        {
+            width: 35px;
+            height: 35px;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+
+        .new_content_panel .text_section
+        {
+            width: 470px;
+            height: 220px;
+            background-color: #0070c803;
+            border-radius: 25px;
+            margin-top: 100px;
+            position: absolute;
+            left: calc(50% - 265px);
+            border: 1px solid #3ddbed;
+            color: #f1f1f1;
+            padding: 30px;
+            resize: none;
+        }
+
+        .new_content_panel .text_section:focus
+        {
+            outline: none;
+        }
+    </style>
+    <script>
+        function CreateTextBlogItem(text)
+        {
+            let blog_tile = document.createElement("p");
+            blog_tile.innerHTML = text;
+            return blog_tile;
+        }
+
+        function CreateCodeBlogItem(code)
+        {
+            let blog_tile = document.createElement("pre");
+            blog_tile.classList.add("code_snippet");
+            blog_tile.innerHTML = code;
+            return blog_tile;
+        }
+
+        function CreateImageBlogItem(src)
+        {
+            let blog_tile = document.createElement("div");
+            blog_tile.className = "img_container";
+
+            let img = document.createElement("img");
+            img.src = src;
+            
+            blog_tile.appendChild(img);
+            return blog_tile;
+        }
+    </script>
+</head>
+<body>
+    <div class="blog_container" id="blog_contents">
+        <h1>Create a new blog</h1>
+    </div>
+    <div class="new_content_panel">
+        <div class="tools">
+            <img src="./media/tool_code.png" onclick="AddNewTextContent(CreateCodeBlogItem)"/>
+            <img src="./media/tool_text.png" onclick="AddNewTextContent(CreateTextBlogItem)"/>
+            <img src="./media/tool_attach.png" onclick="AddNewImageContent()"/>
+        </div>
+        <textarea id="blog_text" class="text_section" placeholder="Type here..."></textarea>
+    </div>
+    <script>
+        function AddNewTextContent(content_create_function)
+        {
+            document.getElementById("blog_contents").appendChild(content_create_function(document.getElementById("blog_text").value));
+        }
+        function AddNewImageContent()
+        {
+            let file_input = document.createElement("input");
+            file_input.type = "file";
+            file_input.accept = "image/*";
+            file_input.onchange = function()
+            {
+                let reader = new FileReader();
+                reader.onload = function()
+                {
+                    document.getElementById("blog_contents").appendChild(CreateImageBlogItem(reader.result));
+                }
+                reader.readAsDataURL(file_input.files[0]);
+            }
+            file_input.click();
+        }
+    </script>
+</body>
+</html>

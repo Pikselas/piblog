@@ -1,15 +1,3 @@
-@font-face 
-{
-    font-family: 'Methanerse';
-    src: url('../fonts/Methanerse.ttf');
-}
-
-@font-face 
-{
-    font-family: 'Azonix';
-    src: url('../fonts/Azonix.otf');
-}
-
 .blog_itm
 {
     display: block;

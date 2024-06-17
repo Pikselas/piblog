@@ -3,7 +3,10 @@ package main
 import (
 	"encoding/json"
 	"html/template"
+	"math/rand"
 	"net/http"
+	"os"
+	"strconv"
 )
 
 type BlogData struct {
@@ -18,14 +21,7 @@ type BlogPost struct {
 
 func main() {
 
-	blg := BlogPost{
-		Title: "My Blog",
-		Contents: []BlogData{
-			{Tag: "h1", Content: "This is the first blog post"},
-			{Tag: "p", Content: "This is the second blog post"},
-			{Tag: "pre", Content: "#include <stdio.h> \n int main() { \n printf(\"Hello, World!\"); \n return 0; \n}"},
-		},
-	}
+	var blg []BlogPost = make([]BlogPost, 0)
 
 	file_server := http.FileServer(http.Dir("./statics"))
 
@@ -42,9 +38,41 @@ func main() {
 		tmpl.Execute(w, struct{ BlogID string }{r.PathValue("id")})
 	})
 
+	http.HandleFunc("/create", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./statics/create.html")
+	})
+
 	http.HandleFunc("/get_blog_data/{id}", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(blg)
+
+		id, err := strconv.Atoi(r.PathValue("id"))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		json.NewEncoder(w).Encode(blg[id])
+	})
+
+	http.HandleFunc("/create_blog", func(w http.ResponseWriter, r *http.Request) {
+
+		var newBlog BlogPost
+		err := json.NewDecoder(r.Body).Decode(&newBlog)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		// convert base64 image to local files
+		for itm := range newBlog.Contents {
+			if newBlog.Contents[itm].Tag == "img" {
+				id := rand.Int()
+				img_file, _ := os.Create("./statics/" + strconv.Itoa(id))
+				defer img_file.Close()
+				img_file.WriteString(newBlog.Contents[itm].Content)
+				newBlog.Contents[itm].Content = "/" + strconv.Itoa(id)
+			}
+		}
+		blg = append(blg, newBlog)
 	})
 
 	http.ListenAndServe(":8080", nil)

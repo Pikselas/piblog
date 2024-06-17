@@ -4,6 +4,11 @@ h1
     font-family: "Methanerse";
     text-align: center;
 }
+
+h1:focus
+{
+    outline: none;
+}
 p
 {
     color: #a6c7cf;

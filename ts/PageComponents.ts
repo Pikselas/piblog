@@ -66,3 +66,30 @@ function GetBlogTile(title: string , description: string, tags: string[])
 
     return blog_tile;
 }
+
+function CreateTextBlogItem(text: string)
+{
+    let blog_tile = document.createElement("p");
+    blog_tile.innerHTML = text;
+    return blog_tile;
+}
+
+function CreateCodeBlogItem(code: string)
+{
+    let blog_tile = document.createElement("pre");
+    blog_tile.classList.add("code_snippet");
+    blog_tile.innerHTML = code;
+    return blog_tile;
+}
+
+function CreateImageBlogItem(src: string)
+{
+    let blog_tile = document.createElement("div");
+    blog_tile.className = "img_container";
+
+    let img = document.createElement("img");
+    img.src = src;
+    
+    blog_tile.appendChild(img);
+    return blog_tile;
+}

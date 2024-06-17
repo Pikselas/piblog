@@ -72,44 +72,19 @@
             outline: none;
         }
     </style>
-    <script>
-        function CreateTextBlogItem(text)
-        {
-            let blog_tile = document.createElement("p");
-            blog_tile.innerHTML = text;
-            return blog_tile;
-        }
-
-        function CreateCodeBlogItem(code)
-        {
-            let blog_tile = document.createElement("pre");
-            blog_tile.classList.add("code_snippet");
-            blog_tile.innerHTML = code;
-            return blog_tile;
-        }
-
-        function CreateImageBlogItem(src)
-        {
-            let blog_tile = document.createElement("div");
-            blog_tile.className = "img_container";
-
-            let img = document.createElement("img");
-            img.src = src;
-            
-            blog_tile.appendChild(img);
-            return blog_tile;
-        }
-    </script>
+    <script src="./scripts/PageComponents.js"></script>
 </head>
 <body>
+    <h1 id="header" contenteditable>Create a new blog</h1>
     <div class="blog_container" id="blog_contents">
-        <h1>Create a new blog</h1>
+        
     </div>
     <div class="new_content_panel">
         <div class="tools">
             <img src="./media/tool_code.png" onclick="AddNewTextContent(CreateCodeBlogItem)"/>
             <img src="./media/tool_text.png" onclick="AddNewTextContent(CreateTextBlogItem)"/>
             <img src="./media/tool_attach.png" onclick="AddNewImageContent()"/>
+            <img src="./media/tool_submit.png" onclick="SubmitBlog()"/>
         </div>
         <textarea id="blog_text" class="text_section" placeholder="Type here..."></textarea>
     </div>
@@ -133,6 +108,35 @@
                 reader.readAsDataURL(file_input.files[0]);
             }
             file_input.click();
+        }
+        function SubmitBlog()
+        {
+            let blog_contents = document.getElementById("blog_contents").children;
+            let blog_data = [];
+            for(let i = 0; i < blog_contents.length; i++)
+            {
+                let content = blog_contents[i];
+                if(content.tagName == "DIV" && content.classList.contains("img_container"))
+                {
+                    blog_data.push({Tag: "img", Content: content.children[0].src});
+                }
+                else
+                {
+                    blog_data.push({Tag: content.tagName, Content: content.innerHTML});
+                }
+            }
+            fetch("/create_blog",{
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ Title: document.getElementById("header").innerText, Contents: blog_data })
+            }).then(response => {
+                response.text().then((txt)=>
+                {
+                    console.log(txt);
+                });
+            })
         }
     </script>
 </body>

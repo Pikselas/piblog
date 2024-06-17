@@ -7,68 +7,37 @@
 
     <link rel="stylesheet" href="/styles/global.css">
     <link rel="stylesheet" href="/styles/blog.css">
+    <script src="/scripts/PageComponents.js"></script>
 </head>
 <body>
-    <!-- <h1> The Direct3D initialization </h1>
-    <p>
-        In order to render awesome 3d scenes we need a graphics API,
-        today we are going to use the direct3d11 API.
-        <br>
-        In order to render awesome 3d scenes we need a graphics API,
-        today we are going to use the direct3d11 API.
-        In order to render awesome 3d scenes we need a graphics API,
-        today we are going to use the direct3d11 API.
-        <br>
-        In order to render awesome 3d scenes we need a graphics API,
-        In order to render awesome 3d scenes we need a graphics API,
-        today we are going to use the direct3d11 API.
-        <br>
-        In order to render awesome 3d scenes we need a graphics API,
-        In order to render awesome 3d scenes we need a graphics API,
-        today we are going to use the direct3d11 API.
-        <br>
-        In order to render awesome 3d scenes we need a graphics API,
-    </p>
-
-    <pre class="code_snippet">
-        
-        @font-face 
-        {
-            font-family: 'Azonix';
-            src: url('../fonts/Azonix.otf');
-        }
-
-        @font-face 
-        {
-            font-family: 'Neusharp';
-            src: url('../fonts/NeusharpBold.otf');
-        }
-    </pre>
-    
-    <div class="img_container">
-        <img src="./media/lowpoly_planet.png" />
-    </div> -->
     <script>
         const blog_id = {{ .BlogID }};
         let f = async () => { 
             data = await fetch("/get_blog_data/"+blog_id);
             let blog_data = await data.json();
             document.head.title = blog_data.Title;
-            blog_data.Contents.forEach(content => 
+            
+            let h1 = document.createElement("h1");
+            h1.innerText = blog_data.Title;
+            document.body.appendChild(h1);
+
+            blog_data.Contents.forEach(async content => 
             {
-                let element = document.createElement(content.Tag);
+                let element = null;
                 switch(content.Tag)
                 {
                     case "img":
+                        let img_data = await fetch(content.Content);
+                        element = CreateImageBlogItem(await img_data.text());
+                       break;
+                    case "PRE":
+                        element = CreateCodeBlogItem(content.Content);
                         break;
-                    case "pre":
-                        element.innerHTML = content.Content;
-                        element.classList.add("code_snippet");
-                        break;
-                    default:
-                        element.innerHTML = content.Content;
-                        break;
+                    case "P":
+                        element = CreateTextBlogItem(content.Content);
+                    break;
                 }
+                //console.log(element);
                 document.body.appendChild(element);
             });
         };

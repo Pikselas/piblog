@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"io"
-	"os"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -35,17 +33,8 @@ var server_api_options = options.ServerAPI(options.ServerAPIVersion1)
 var db_client *mongo.Client
 
 func init_connection() {
-	env, err := os.Open(".env")
-	if err != nil {
-		panic(err)
-	}
-	defer env.Close()
-	db_url, err := io.ReadAll(env)
-	if err != nil {
-		panic(err)
-	}
-	db_url = db_url[len("DB_URL="):]
-	opts := options.Client().ApplyURI(string(db_url)).SetServerAPIOptions(server_api_options)
+	db_url := ENV["DB_URL"]
+	opts := options.Client().ApplyURI(db_url).SetServerAPIOptions(server_api_options)
 	client, err := mongo.Connect(context.TODO(), opts)
 	if err != nil {
 		panic(err)

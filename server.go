@@ -1,18 +1,21 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"html/template"
+	"main/ToOcto"
 	"math/rand"
 	"net/http"
-	"os"
 	"strconv"
 )
 
 func main() {
 
-	file_server := http.FileServer(http.Dir("./statics"))
+	parseEnv()
 	init_connection()
+	file_server := http.FileServer(http.Dir("./statics"))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/" {
@@ -54,20 +57,29 @@ func main() {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-
+		ID := strconv.Itoa(rand.Int())
 		// convert base64 image to local files
+		img_count := 0
+		raw_src_path := "https://raw.githubusercontent.com/Pikselas/pikselasblogcontent/main/images/%s/%d"
+		user, octo_err := ToOcto.NewOctoUser(ENV["EMAIL"], ENV["GH_TOKEN"])
+		if octo_err != nil {
+			http.Error(w, octo_err.Error(), http.StatusInternalServerError)
+			return
+		}
 		for itm := range newBlog.Data.Contents {
 			if newBlog.Data.Contents[itm].Tag == "img" {
-				id := rand.Int()
-				img_file, _ := os.Create("./statics/" + strconv.Itoa(id))
-				defer img_file.Close()
-				img_file.WriteString(newBlog.Data.Contents[itm].Content)
-				newBlog.Data.Contents[itm].Content = "/" + strconv.Itoa(id)
+				path := "images/" + ID + "/" + strconv.Itoa(img_count)
+				octo_err = user.Transfer("pikselasblogcontent", path, bytes.NewBufferString(newBlog.Data.Contents[itm].Content))
+				if octo_err != nil {
+					http.Error(w, octo_err.Error(), http.StatusInternalServerError)
+					return
+				}
+				newBlog.Data.Contents[itm].Content = fmt.Sprintf(raw_src_path, ID, img_count)
+				img_count++
 			}
 		}
-
-		newBlog.Data.Id = strconv.Itoa(rand.Int())
-		InsertBlog(newBlog.Data, BlogDescription{Id: newBlog.Data.Id, Title: newBlog.Data.Title, Description: newBlog.Desc, Tags: newBlog.Tags})
+		newBlog.Data.Id = ID
+		InsertBlog(newBlog.Data, BlogDescription{Id: ID, Title: newBlog.Data.Title, Description: newBlog.Desc, Tags: newBlog.Tags})
 	})
 	http.HandleFunc("/search_tags", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

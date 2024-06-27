@@ -24,8 +24,14 @@ jobs:
     - name: Build typescript
       run: tsc
 
-    - name: Create env file
-      run: echo "DB_URL=${{ secrets.DB_URL }}" "GH_TOKEN=${{ secrets.GH_TOKEN }}" "EMAIL=${{ secrets.EMAIL }}" > .env
+    - name: Add db url to env file
+      run: echo "DB_URL=${{ secrets.DB_URL }}" > .env
+
+    - name: Add github token to env file
+      run: echo "GH_TOKEN=${{ secrets.GH_TOKEN }}" >> .env
+
+    - name: Add github email to env file
+      run: echo "EMAIL=${{ secrets.EMAIL }}" >> .env  
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1

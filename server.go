@@ -61,6 +61,9 @@ func main() {
 		// convert base64 image to local files
 		img_count := 0
 		raw_src_path := "https://raw.githubusercontent.com/Pikselas/pikselasblogcontent/main/images/%s/%d"
+
+		fmt.Print(ENV["GH_TOKEN"], ",")
+		fmt.Print(ENV["EMAIL"])
 		user, octo_err := ToOcto.NewOctoUser(ENV["EMAIL"], ENV["GH_TOKEN"])
 		if octo_err != nil {
 			http.Error(w, octo_err.Error(), http.StatusInternalServerError)

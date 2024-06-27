@@ -15,14 +15,15 @@
         let f = async () => { 
             data = await fetch("/get_blog_data/"+blog_id);
             let blog_data = await data.json();
-            document.head.title = blog_data.Title;
+            document.title = blog_data.Title;
             
             let h1 = document.createElement("h1");
             h1.innerText = blog_data.Title;
             document.body.appendChild(h1);
 
-            blog_data.Contents.forEach(async content => 
+            for(let i = 0; i < blog_data.Contents.length; i++) 
             {
+                let content = blog_data.Contents[i];
                 let element = null;
                 switch(content.Tag)
                 {
@@ -39,7 +40,7 @@
                 }
                 //console.log(element);
                 document.body.appendChild(element);
-            });
+            }
         };
         f();
     </script>

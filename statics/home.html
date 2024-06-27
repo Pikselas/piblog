@@ -189,11 +189,8 @@
     <div class="base_panel">
         <div id="fd"></div>
         <div class="contents_panel">
-            <input type="search" placeholder="Search.."/>
-            <div class="tags">
-
-                <div onclick="ShowBlogPosts('GF')" class="tag">C++</div>
-                <div class="tag">Golang</div>
+            <input id="search" type="search" placeholder="Search.."/>
+            <div id="tags" class="tags">
 
             </div>
         </div>
@@ -210,11 +207,31 @@
         AsElement(flow).style.transform = "rotate(-180deg)";
         SetFlowerTheme(flow, "base_panel_1");
         
-        document.getElementById("fd").appendChild(flow.Element.HtmlElement);
-        document.getElementById("blog_posts").appendChild(GetBlogTile("Creating the direct3d art using LGTV+" , "erghfbhf" , ["cpp","golang"]));
-    
-        HideBlogPosts();
+        async function SearchTags(tag = null)
+        {
+            let str = "/search_tags" + (tag == null || tag == "" ? "" : "/" + tag);
+            let res = await fetch(str);
+            res = await res.json();
+            let tags = document.getElementById("tags");
+            tags.innerHTML = "";
+            res.forEach(tag => {
+                let tagElement = document.createElement("div");
+                tagElement.classList.add("tag");
+                tagElement.innerText = tag;
+                tagElement.onclick = () => ShowBlogPostsByTag(tag);
+                tags.appendChild(tagElement);
+            });
+        }
 
+        document.getElementById("fd").appendChild(flow.Element.HtmlElement);
+     //   document.getElementById("blog_posts").appendChild(GetBlogTile("Creating the direct3d art using LGTV+" , "erghfbhf" , ["cpp","golang"]));
+        document.getElementById("search").onchange = (e) => {
+            let search = e.target.value;
+            //SearchTags(search);
+            //ShowBlogPostsByTitle(search);
+        }
+        HideBlogPosts();
+        SearchTags();
     </script>
 </body>
 </html>

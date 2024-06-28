@@ -19,10 +19,14 @@ func main() {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/" {
-			http.ServeFile(w, r, "./statics/home.html")
+			http.ServeFile(w, r, "./statics/front.html")
 		} else {
 			file_server.ServeHTTP(w, r)
 		}
+	})
+
+	http.HandleFunc("/home", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./statics/home.html")
 	})
 
 	http.HandleFunc("/blog/{id}", func(w http.ResponseWriter, r *http.Request) {

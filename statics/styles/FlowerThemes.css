@@ -16,11 +16,34 @@
     --petal00: #021024;
     --petal10: #021024;
     --petal11: #021024;
+    /* --petal11: #ffffff; */
     background-color: #C1E8FF;
+}
+
+.same_v
+{
+    --petal10: #010814;
+
+    --petal20: #010814;
+    --petal11: #010814;
+    --petal00: #010814;
+
+    --petal01: #010814;
+    --petal12: #010814;
+    --petal21: #010814;
+    
+    /* --petal12: #021024; */
+    background-color: #010814;
 }
 
 .base_panel_1
 {
     color: #010814;
     /* background-color: #010814; */
+}
+
+.base_panel_2
+{
+    color: #7DA0CA;
+    background-color: #021024;
 }

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./styles/FlowerThemes.css">
+    <link rel="stylesheet" href="./styles/global.css">
+
+    <script src="./scripts/Env.js"></script>
+    <script src="./scripts/Hexagon.js"></script>
+    <script src="./scripts/HexRow.js"></script>
+    <script src="./scripts/HexPanel.js"></script>
+    <script src="./scripts/HexFlower.js"></script>
+    <script src="./scripts/FlowerThemes.js"></script>
+
+    <style>
+        body
+        {
+            overflow: hidden;
+        }
+        #x{
+            background: linear-gradient(#7DA0CA, #052659);
+            width: 500px;
+            height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: calc(50% - 250px);
+            left: calc(50% - 250px);
+            border-radius: 50%;
+            animation: rotate 10s infinite linear reverse;
+        }
+        @keyframes rotate{
+            0%{
+                transform: rotate(0deg);
+            }
+            100%{
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="x">
+
+    </div>
+    <script>
+        let flow = new HexSunflower(525,525);
+        AsElement(flow).style.position = "absolute";
+        AsElement(flow).style.rotate = "90deg";
+        AsElement(flow).style.animation = "rotate 5s infinite linear";
+        SetFlowerTheme(flow, "same_v");
+        document.getElementById("x").appendChild(flow.Element.HtmlElement);
+
+        let flow2 = new HexClover(300,325);
+        AsElement(flow2).style.position = "absolute";
+        AsElement(flow2).style.animation = "rotate 10s infinite linear";
+        AsElement(flow2).style.cursor = "pointer";
+        SetFlowerTheme(flow2, "base_panel_2");
+
+        flow2.Element.HtmlElement.onclick = ()=>
+        {
+            window.location.href = "/home";
+        }
+
+        document.getElementById("x").appendChild(flow2.Element.HtmlElement);
+
+    </script>
+</body>
+</html>

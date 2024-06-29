@@ -46,13 +46,13 @@ function GetBlogTile(title: string , description: string, tags: string[])
     let tags_element = document.createElement("div");
     tags_element.className = "tags";
 
-    tags.forEach(tag => 
-    {
-        let tag_element = document.createElement("img");
-        tag_element.className = "tag";
-        tag_element.src = "./media/tag_" + tag + ".png";
-        tags_element.appendChild(tag_element);
-    });
+    // tags.forEach(tag => 
+    // {
+    //     // let tag_element = document.createElement("img");
+    //     // tag_element.className = "tag";
+    //     // tag_element.src = "./media/tag_" + tag + ".png";
+    //     // tags_element.appendChild(tag_element);
+    // });
     
     content.appendChild(tags_element);
     content_area.appendChild(content);

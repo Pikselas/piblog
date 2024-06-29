@@ -81,12 +81,12 @@ func GetTags(tag_name string) []string {
 	return result
 }
 
-func SearchBlogByTags(tags []string) []BlogDescription {
+func SearchBlog(bson_format bson.M) []BlogDescription {
 	collection, err := GetDbCollection("blogs_desc")
 	if err != nil {
 		panic(err)
 	}
-	cursor, err := collection.Find(context.Background(), bson.M{"tags": bson.M{"$in": tags}})
+	cursor, err := collection.Find(context.Background(), bson_format)
 	if err != nil {
 		panic(err)
 	}
@@ -95,6 +95,14 @@ func SearchBlogByTags(tags []string) []BlogDescription {
 		panic(err)
 	}
 	return result
+}
+
+func SearchBlogByTags(tags []string) []BlogDescription {
+	return SearchBlog(bson.M{"tags": bson.M{"$in": tags}})
+}
+
+func SearchBlogByTitle(title string) []BlogDescription {
+	return SearchBlog(bson.M{"title": bson.M{"$regex": title, "$options": "i"}})
 }
 
 func InsertBlog(blog BlogPost, desc BlogDescription) {

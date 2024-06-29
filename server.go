@@ -106,6 +106,10 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(SearchBlogByTags(tags))
 	})
+	http.HandleFunc("/search_by_title/{title}", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(SearchBlogByTitle(r.PathValue("title")))
+	})
 
 	http.ListenAndServe(":8080", nil)
 }

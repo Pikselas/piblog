@@ -8,8 +8,20 @@ import (
 	"main/ToOcto"
 	"math/rand"
 	"net/http"
+	"net/url"
+	"regexp"
 	"strconv"
+	"strings"
 )
+
+func createSlug(title string) string {
+	title = strings.ToLower(title)
+	title = strings.ReplaceAll(title, " ", "-")
+	re := regexp.MustCompile(`[^\w-]`)
+	title = re.ReplaceAllString(title, "")
+	title = url.QueryEscape(title)
+	return title + "-" + strconv.Itoa(rand.Intn(1000))
+}
 
 func main() {
 
@@ -30,21 +42,17 @@ func main() {
 	})
 
 	http.HandleFunc("/blog/{id}", func(w http.ResponseWriter, r *http.Request) {
-		tmpl := template.Must(template.ParseFiles("./statics/temp.html"))
-		tmpl.Execute(w, struct{ BlogID string }{r.PathValue("id")})
+		blog_template := template.Must(template.ParseFiles("./templates/blog_template.html"))
+		blog_template.Execute(w, struct {
+			BlogD BlogPost
+		}{FetchBlog(r.PathValue("id"))})
 	})
 	http.HandleFunc("/create", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./statics/create.html")
 	})
 	http.HandleFunc("/get_blog_data/{id}", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-
-		id, err := strconv.Atoi(r.PathValue("id"))
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		json.NewEncoder(w).Encode(FetchBlog(strconv.Itoa(id)))
+		json.NewEncoder(w).Encode(FetchBlog(r.PathValue("id")))
 	})
 	http.HandleFunc("/create_blog", func(w http.ResponseWriter, r *http.Request) {
 
@@ -61,13 +69,11 @@ func main() {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		ID := strconv.Itoa(rand.Int())
+		ID := createSlug(newBlog.Data.Title)
 		// convert base64 image to local files
 		img_count := 0
 		raw_src_path := "https://raw.githubusercontent.com/Pikselas/pikselasblogcontent/main/images/%s/%d"
 
-		fmt.Print(ENV["GH_TOKEN"], ",")
-		fmt.Print(ENV["EMAIL"])
 		user, octo_err := ToOcto.NewOctoUser(ENV["EMAIL"], ENV["GH_TOKEN"])
 		if octo_err != nil {
 			http.Error(w, octo_err.Error(), http.StatusInternalServerError)

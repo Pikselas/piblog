@@ -10,17 +10,15 @@
     <script src="/scripts/PageComponents.js"></script>
 </head>
 <body>
-    <script>
-        const blog_id = {{ .BlogID }};
-        let f = async () => { 
-            data = await fetch("/get_blog_data/"+blog_id);
-            let blog_data = await data.json();
-            document.title = blog_data.Title;
+   <script>
+        const blog_data = {{ .BlogD }};
+        document.title = blog_data.Title;
             
-            let h1 = document.createElement("h1");
-            h1.innerText = blog_data.Title;
-            document.body.appendChild(h1);
+        let h1 = document.createElement("h1");
+        h1.innerText = blog_data.Title;
+        document.body.appendChild(h1);
 
+       (async ()=>{
             for(let i = 0; i < blog_data.Contents.length; i++) 
             {
                 let content = blog_data.Contents[i];
@@ -30,7 +28,7 @@
                     case "img":
                         let img_data = await fetch(content.Content);
                         element = CreateImageBlogItem(await img_data.text());
-                       break;
+                        break;
                     case "PRE":
                         element = CreateCodeBlogItem(content.Content);
                         break;
@@ -38,11 +36,9 @@
                         element = CreateTextBlogItem(content.Content);
                     break;
                 }
-                //console.log(element);
                 document.body.appendChild(element);
             }
-        };
-        f();
-    </script>
+        })();
+   </script>
 </body>
 </html>

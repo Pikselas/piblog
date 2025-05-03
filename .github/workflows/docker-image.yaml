@@ -55,4 +55,4 @@ jobs:
         context: .
         push: true
         # tags: ${{ secrets.ACR_LOGIN_SERVER }}/piblog:latest
-        tags: https://hub.docker.com/repository/docker/pikselas/pikselasblog:latest
+        tags: pikselas/pikselasblog:${{ github.ref_name }}-${{ github.run_number }}

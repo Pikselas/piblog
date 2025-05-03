@@ -32,8 +32,7 @@ var server_api_options = options.ServerAPI(options.ServerAPIVersion1)
 
 var db_client *mongo.Client
 
-func init_connection() {
-	db_url := ENV["DB_URL"]
+func init_connection(db_url string) {
 	opts := options.Client().ApplyURI(db_url).SetServerAPIOptions(server_api_options)
 	client, err := mongo.Connect(context.TODO(), opts)
 	if err != nil {

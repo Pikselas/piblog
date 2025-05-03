@@ -9,6 +9,7 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -25,8 +26,9 @@ func createSlug(title string) string {
 
 func main() {
 
-	parseEnv()
-	init_connection()
+	// parseEnv()
+	// init_connection(ENV["DB_URL"])
+	init_connection(os.Getenv("DB_URL"))
 	file_server := http.FileServer(http.Dir("./statics"))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -74,7 +76,8 @@ func main() {
 		img_count := 0
 		raw_src_path := "https://raw.githubusercontent.com/Pikselas/pikselasblogcontent/main/images/%s/%d"
 
-		user, octo_err := ToOcto.NewOctoUser(ENV["EMAIL"], ENV["GH_TOKEN"])
+		// user, octo_err := ToOcto.NewOctoUser(ENV["EMAIL"], ENV["GH_TOKEN"])
+		user, octo_err := ToOcto.NewOctoUser(os.Getenv("EMAIL"), os.Getenv("GH_TOKEN"))
 		if octo_err != nil {
 			http.Error(w, octo_err.Error(), http.StatusInternalServerError)
 			return

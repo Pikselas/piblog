@@ -155,22 +155,39 @@
             /* display: inline-block; */
             font-family: "Azonix";
         }
+        .close_btn
+        {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 30px;
+            height: 30px;
+            border: 2px solid #bcebff;
+            background-color: #0f001fb0;
+            border-radius: 50%;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 18px;
+            text-align: center;
+        }
     </style>
-    <script src="./scripts/PageComponents.js"></script>
+    <script src="/scripts/PageComponents.js"></script>
 </head>
 <body>
-    <h1 id="header" contenteditable>Create a new blog</h1>
+    <h1 id="header" contenteditable>{{ .Blog.Title }}</h1>
     <div class="blog_container" id="blog_contents">
-        
+
     </div>
     <div class="new_content_panel">
         <div class="tools">
-            <img src="./media/tool_code.png" onclick="AddNewTextContent(CreateCodeBlogItem)"/>
-            <img src="./media/tool_text.png" onclick="AddNewTextContent(CreateTextBlogItem)"/>
-            <img src="./media/tool_attach.png" onclick="AddNewImageContent()"/>
-            <img src="./media/tool_submit.png" onclick="SubmitBlog()"/>
+            <img src="/media/tool_code.png" onclick="AddNewTextContent(CreateCodeBlogItem)"/>
+            <img src="/media/tool_text.png" onclick="AddNewTextContent(CreateTextBlogItem)"/>
+            <img src="/media/tool_attach.png" onclick="AddNewImageContent()"/>
+            <img src="/media/tool_submit.png" onclick="SubmitBlog()"/>
         </div>
-        <textarea id="blog_text" class="text_section" placeholder="Type here..."></textarea>
+        <textarea id="blog_text" class="text_section" placeholder="Type here...">{{ .Desc }}</textarea>
         <div id="tags">
             
         </div>
@@ -187,9 +204,23 @@
         </datalist>
     </div>
     <script>
+        function AddCloseButton(element)
+        {
+            let close_btn = document.createElement("button");
+            close_btn.innerText = "x";
+            close_btn.onclick = function()
+            {
+                element.remove();
+            }
+            close_btn.className = "close_btn";
+            element.appendChild(close_btn);
+            return element;
+        }
         function AddNewTextContent(content_create_function)
         {
-            document.getElementById("blog_contents").appendChild(content_create_function(document.getElementById("blog_text").value));
+            let content = AddCloseButton(content_create_function(document.getElementById("blog_text").value));
+            content.contentEditable = true;
+            document.getElementById("blog_contents").appendChild(content);
         }
         function AddNewImageContent()
         {
@@ -201,7 +232,7 @@
                 let reader = new FileReader();
                 reader.onload = function()
                 {
-                    document.getElementById("blog_contents").appendChild(CreateImageBlogItem(reader.result));
+                    document.getElementById("blog_contents").appendChild(AddCloseButton(CreateImageBlogItem(reader.result)));
                 }
                 reader.readAsDataURL(file_input.files[0]);
             }
@@ -214,6 +245,12 @@
             for(let i = 0; i < blog_contents.length; i++)
             {
                 let content = blog_contents[i];
+                // remove close button if exists
+                let close_btn = content.querySelector(".close_btn");
+                if(close_btn)
+                {
+                    close_btn.remove();
+                }
                 if(content.tagName == "DIV" && content.classList.contains("img_container"))
                 {
                     blog_data.push({Tag: "img", Content: content.children[0].src});
@@ -223,7 +260,7 @@
                     blog_data.push({Tag: content.tagName, Content: content.innerHTML});
                 }
             }
-            fetch("/create_blog",{
+            fetch("{{ .SubmitUrl }}",{
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'
@@ -240,6 +277,7 @@
                 response.text().then((txt)=>
                 {
                     console.log(txt);
+                    alert("Blog submitted successfully!");
                 });
             })
         }
@@ -252,7 +290,31 @@
             tag.innerText = tag_name;
             tags.appendChild(tag);
         }
-
+        const blog_data = {{ .Blog.Contents | toJSON }};
+        (async ()=>{
+            let container = document.getElementById("blog_contents");
+            for(let i = 0; i < blog_data.length; i++) 
+            {
+                let content = blog_data[i];
+                let element = null;
+                switch(content.Tag)
+                {
+                    case "img":
+                        let img_data = await fetch(content.Content);
+                        element = CreateImageBlogItem(await img_data.text());
+                        break;
+                    case "PRE":
+                        element = CreateCodeBlogItem(content.Content);
+                        break;
+                    case "P":
+                        element = CreateTextBlogItem(content.Content);
+                    break;
+                }
+                AddCloseButton(element);
+                element.contentEditable = true;
+                container.appendChild(element);
+            }
+        })();
     </script>
 </body>
 </html>

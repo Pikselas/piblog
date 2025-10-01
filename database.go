@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -14,9 +15,10 @@ type BlogData struct {
 }
 
 type BlogPost struct {
-	Id       string
-	Title    string
-	Contents []BlogData
+	Id          string
+	Title       string
+	Contents    []BlogData
+	lastUpdated time.Time
 }
 
 type BlogDescription struct {
@@ -104,6 +106,10 @@ func SearchBlogByTitle(title string) []BlogDescription {
 	return SearchBlog(bson.M{"title": bson.M{"$regex": title, "$options": "i"}})
 }
 
+func SearchBlogById(id string) []BlogDescription {
+	return SearchBlog(bson.M{"id": id})
+}
+
 func InsertBlog(blog BlogPost, desc BlogDescription) {
 	collection, _ := GetDbCollection("blogs")
 	_, err := collection.InsertOne(context.Background(), blog)
@@ -128,4 +134,20 @@ func FetchBlog(ID string) BlogPost {
 		panic(err)
 	}
 	return result
+}
+
+func UpdateBlog(blog BlogPost, desc BlogDescription) {
+	collection, _ := GetDbCollection("blogs")
+	_, err := collection.ReplaceOne(context.Background(), bson.M{"id": blog.Id}, blog)
+	if err != nil {
+		panic(err)
+	}
+	for _, tag := range desc.Tags {
+		AddTagIfNotExists(tag)
+	}
+	collection, _ = GetDbCollection("blogs_desc")
+	_, err = collection.ReplaceOne(context.Background(), bson.M{"id": desc.Id}, desc)
+	if err != nil {
+		panic(err)
+	}
 }

@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"html/template"
 	"main/ToOcto"
-	"math/rand"
 	"net/http"
 	"net/url"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func createSlug(title string) string {
@@ -21,43 +21,12 @@ func createSlug(title string) string {
 	re := regexp.MustCompile(`[^\w-]`)
 	title = re.ReplaceAllString(title, "")
 	title = url.QueryEscape(title)
-	return title + "-" + strconv.Itoa(rand.Intn(1000))
+	return title
 }
 
-func main() {
+func create_blog_util(create_blog_func func(BlogPost, BlogDescription)) http.HandlerFunc {
 
-	// parseEnv()
-	// init_connection(ENV["DB_URL"])
-	init_connection(os.Getenv("DB_URL"))
-	file_server := http.FileServer(http.Dir("./statics"))
-
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/" {
-			http.ServeFile(w, r, "./statics/front.html")
-		} else {
-			file_server.ServeHTTP(w, r)
-		}
-	})
-
-	http.HandleFunc("/home", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./statics/home.html")
-	})
-
-	http.HandleFunc("/blog/{id}", func(w http.ResponseWriter, r *http.Request) {
-		blog_template := template.Must(template.ParseFiles("./templates/blog_template.html"))
-		blog_template.Execute(w, struct {
-			BlogD BlogPost
-		}{FetchBlog(r.PathValue("id"))})
-	})
-	http.HandleFunc("/create", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./statics/create.html")
-	})
-	http.HandleFunc("/get_blog_data/{id}", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(FetchBlog(r.PathValue("id")))
-	})
-	http.HandleFunc("/create_blog", func(w http.ResponseWriter, r *http.Request) {
-
+	return func(w http.ResponseWriter, r *http.Request) {
 		type blog_data struct {
 			Tags []string
 			Desc string
@@ -87,16 +56,97 @@ func main() {
 				path := "images/" + ID + "/" + strconv.Itoa(img_count)
 				octo_err = user.Transfer("pikselasblogcontent", path, bytes.NewBufferString(newBlog.Data.Contents[itm].Content))
 				if octo_err != nil {
-					http.Error(w, octo_err.Error(), http.StatusInternalServerError)
-					return
+					oct_err2 := user.Update("pikselasblogcontent", path, bytes.NewBufferString(newBlog.Data.Contents[itm].Content))
+					if oct_err2 != nil {
+						http.Error(w, fmt.Sprintf("Error saving image: %s <br/> Error updating image: %s", octo_err.Error(), oct_err2.Error()), http.StatusInternalServerError)
+						return
+					}
 				}
 				newBlog.Data.Contents[itm].Content = fmt.Sprintf(raw_src_path, ID, img_count)
 				img_count++
 			}
 		}
 		newBlog.Data.Id = ID
-		InsertBlog(newBlog.Data, BlogDescription{Id: ID, Title: newBlog.Data.Title, Description: newBlog.Desc, Tags: newBlog.Tags})
+		newBlog.Data.lastUpdated = time.Now()
+		create_blog_func(newBlog.Data, BlogDescription{Id: ID, Title: newBlog.Data.Title, Description: newBlog.Desc, Tags: newBlog.Tags})
+	}
+}
+
+func convert_to_json(data interface{}) template.JS {
+	json_data, err := json.Marshal(data)
+	if err != nil {
+		return "{}"
+	}
+	return template.JS(json_data)
+}
+
+func main() {
+
+	// parseEnv()
+	// init_connection(ENV["DB_URL"])
+	init_connection(os.Getenv("DB_URL"))
+	file_server := http.FileServer(http.Dir("./statics"))
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/" {
+			http.ServeFile(w, r, "./statics/front.html")
+		} else {
+			file_server.ServeHTTP(w, r)
+		}
 	})
+
+	http.HandleFunc("/home", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./statics/home.html")
+	})
+
+	http.HandleFunc("/blog/{id}", func(w http.ResponseWriter, r *http.Request) {
+		blog_template := template.Must(template.ParseFiles("./templates/blog_template.html"))
+		blog_template.Execute(w, struct {
+			BlogD BlogPost
+		}{FetchBlog(r.PathValue("id"))})
+	})
+	http.HandleFunc("/create", func(w http.ResponseWriter, r *http.Request) {
+		blog_template := template.Must(template.New("create_template.html").Funcs(template.FuncMap{
+			"toJSON": convert_to_json,
+		}).ParseFiles("./templates/create_template.html"))
+		err := blog_template.Execute(w, struct {
+			SubmitUrl string
+			Blog      BlogPost
+			Desc      string
+		}{
+			SubmitUrl: "/create_blog",
+			Blog:      BlogPost{Title: "Create New Blog"},
+			Desc:      "Blog description is here!",
+		})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	})
+	http.HandleFunc("/edit/{id}", func(w http.ResponseWriter, r *http.Request) {
+		blog_template := template.Must(template.New("create_template.html").Funcs(template.FuncMap{
+			"toJSON": convert_to_json,
+		}).ParseFiles("./templates/create_template.html"))
+		err := blog_template.Execute(w, struct {
+			SubmitUrl string
+			Blog      BlogPost
+			Desc      string
+		}{
+			SubmitUrl: "/update_blog",
+			Blog:      FetchBlog(r.PathValue("id")),
+			Desc:      SearchBlogById(r.PathValue("id"))[0].Description,
+		})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	})
+	http.HandleFunc("/get_blog_data/{id}", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(FetchBlog(r.PathValue("id")))
+	})
+	http.HandleFunc("/create_blog", create_blog_util(InsertBlog))
+	http.HandleFunc("/update_blog", create_blog_util(UpdateBlog))
 	http.HandleFunc("/search_tags", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(GetTags(""))

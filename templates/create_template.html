@@ -187,9 +187,11 @@
             <img src="/media/tool_attach.png" onclick="AddNewImageContent()"/>
             <img src="/media/tool_submit.png" onclick="SubmitBlog()"/>
         </div>
-        <textarea id="blog_text" class="text_section" placeholder="Type here...">{{ .Desc }}</textarea>
+        <textarea id="blog_text" class="text_section" placeholder="Type here...">{{ .Desc.Description }}</textarea>
         <div id="tags">
-            
+            {{range .Desc.Tags }}
+                <div>{{ . }}</div>
+            {{end}}
         </div>
         <div class="tags_creator">
             <input id="tags_input" list="tags_data" placeholder="tags..">

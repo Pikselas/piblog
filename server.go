@@ -45,8 +45,7 @@ func create_blog_util(create_blog_func func(BlogPost, BlogDescription)) http.Han
 		img_count := 0
 		raw_src_path := "https://raw.githubusercontent.com/Pikselas/pikselasblogcontent/main/images/%s/%d"
 
-		// user, octo_err := ToOcto.NewOctoUser(ENV["EMAIL"], ENV["GH_TOKEN"])
-		user, octo_err := ToOcto.NewOctoUser(os.Getenv("EMAIL"), os.Getenv("GH_TOKEN"))
+		user, octo_err := ToOcto.NewOctoUser(getEnvVar("EMAIL"), getEnvVar("GH_TOKEN"))
 		if octo_err != nil {
 			http.Error(w, octo_err.Error(), http.StatusInternalServerError)
 			return
@@ -80,11 +79,15 @@ func convert_to_json(data interface{}) template.JS {
 	return template.JS(json_data)
 }
 
+func getEnvVar(k string) string {
+	// return ENV[k]
+	return os.Getenv(k)
+}
+
 func main() {
 
 	// parseEnv()
-	// init_connection(ENV["DB_URL"])
-	init_connection(os.Getenv("DB_URL"))
+	init_connection(getEnvVar("DB_URL"))
 	file_server := http.FileServer(http.Dir("./statics"))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -112,11 +115,11 @@ func main() {
 		err := blog_template.Execute(w, struct {
 			SubmitUrl string
 			Blog      BlogPost
-			Desc      string
+			Desc      BlogDescription
 		}{
 			SubmitUrl: "/create_blog",
 			Blog:      BlogPost{Title: "Create New Blog"},
-			Desc:      "Blog description is here!",
+			Desc:      BlogDescription{},
 		})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -130,11 +133,11 @@ func main() {
 		err := blog_template.Execute(w, struct {
 			SubmitUrl string
 			Blog      BlogPost
-			Desc      string
+			Desc      BlogDescription
 		}{
 			SubmitUrl: "/update_blog",
 			Blog:      FetchBlog(r.PathValue("id")),
-			Desc:      SearchBlogById(r.PathValue("id"))[0].Description,
+			Desc:      SearchBlogById(r.PathValue("id"))[0],
 		})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
